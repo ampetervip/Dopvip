@@ -1,5 +1,5 @@
 ```markdown
 ——————————————————————————————————————————————————————————————————————————————————————————————————————
 Op短地址安装命令
-bash -c "$(wget -O- http://www.ampeter.cn:31409/openvpn_xl/op_vip.sh)"
+bash -c "$(wget -O- https://raw.githubusercontent.com/ampetervip/Dopvip/main/op_vip.sh)"
 ——————————————————————————————————————————————————————————————————————————————————————————————————————
