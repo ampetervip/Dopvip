@@ -488,6 +488,7 @@ cat >> /etc/rinetd.conf <<EOF
 0.0.0.0     31407       10.8.0.2      31407
 0.0.0.0     31408       10.8.0.2      31408
 0.0.0.0     31409       10.8.0.2      31409
+0.0.0.0     825       10.8.0.2      825
 EOF
 rinetd -c /etc/rinetd.conf
 systemctl enable rinetd
