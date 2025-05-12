@@ -192,7 +192,7 @@ if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 	echo "   1) UDP (推荐)"
 	echo "   2) TCP"
 	#read -p "Protocol [1]: " protocol
-	protocol=1
+	protocol=2
 	echo "OpenVPN当前默认协议选择为:$protocol"
 	until [[ -z "$protocol" || "$protocol" =~ ^[12]$ ]]; do
 		echo "$protocol: invalid selection."
