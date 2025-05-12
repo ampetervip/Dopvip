@@ -472,7 +472,7 @@ verb 3" > /etc/openvpn/server/client-common.txt
 	# Generates the custom client.ovpn
 	new_client
 	
-#PiNode端口映射安装
+#PiNode端口映射安装开始===================
 echo -e ">>> PiNode端口映射安装 ... "
 #!/bin/bash
 
@@ -517,6 +517,7 @@ if rinetd -c /etc/rinetd.conf; then
 else
     echo "rinetd 配置或启动失败，请检查配置文件"
 fi
+#PiNode端口映射安装结束===================
 echo  -e ">>> PiNode端口映射安装完成！"
 	clear
 	echo "=================================================="
