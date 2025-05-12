@@ -1,5 +1,6 @@
 
-——————————————————————————————————————————————————————————————————————————————————————————————————————
+——————————————————————————————————————————————————————————
+
 Op安装命令(默认)
 bash -c "$(wget -O- https://raw.githubusercontent.com/ampetervip/Dopvip/main/op_vip.sh)"
 
@@ -8,4 +9,4 @@ bash -c "$(wget -O- https://raw.githubusercontent.com/ampetervip/Dopvip/main/op_
 
 Op安装命令(其它)
 bash -c "$(wget -O- https://raw.githubusercontent.com/ampetervip/Dopvip/main/op_other.sh)"
-——————————————————————————————————————————————————————————————————————————————————————————————————————
+—————————————————————————————————————————————————————————
