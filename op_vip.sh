@@ -474,10 +474,6 @@ verb 3" > /etc/openvpn/server/client-common.txt
 	
 #PiNode端口映射安装开始===================
 echo -e ">>> PiNode端口映射安装 ... "
-#!/bin/bash
-
-# 输出提示信息
-echo -e ">>> PiNode端口映射安装 ... "
 
 # 更新软件包列表
 apt update
