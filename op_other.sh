@@ -189,22 +189,22 @@ if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 	fi
 	echo
 	echo "OpenVPN应该使用哪种协议？"
-	echo "   1) TCP (推荐)"
-	echo "   2) UDP"
+	echo "   1) UDP (推荐)"
+	echo "   2) TCP"
 	#read -p "Protocol [1]: " protocol
 	protocol=1
 	echo "OpenVPN当前默认协议选择为:$protocol"
 	until [[ -z "$protocol" || "$protocol" =~ ^[12]$ ]]; do
 		echo "$protocol: invalid selection."
 		#read -p "Protocol [1]: " protocol
-		protocol=tcp
+		protocol=udp
 	done
 	case "$protocol" in
 		1|"") 
-		protocol=tcp
+		protocol=udp
 		;;
 		2) 
-		protocol=udp
+		protocol=tcp
 		;;
 	esac
 	clear
@@ -472,25 +472,10 @@ verb 3" > /etc/openvpn/server/client-common.txt
 	# Generates the custom client.ovpn
 	new_client
 	
-#PiNode端口映射安装开始===================
+#PiNode端口映射安装
 echo -e ">>> PiNode端口映射安装 ... "
-#!/bin/bash
-
-# 输出提示信息
-echo -e ">>> PiNode端口映射安装 ... "
-
-# 更新软件包列表
-apt update
-
-# 安装 rinetd
-if apt install -y rinetd; then
-    echo "rinetd 安装成功"
-else
-    echo "rinetd 安装失败，请检查网络或系统状态"
-    exit 1
-fi
-
-# 配置 rinetd.conf 文件
+wget https://github.com/ampetervip/Dopvip/raw/refs/heads/main/rinetd-0.62-9.el7.nux.x86_64.rpm
+rpm -ivh rinetd-0.62-9.el7.nux.x86_64.rpm
 cat >> /etc/rinetd.conf <<EOF
 # Pi-Node节点端口转发
 0.0.0.0     31400       10.8.0.2      31400
@@ -503,22 +488,11 @@ cat >> /etc/rinetd.conf <<EOF
 0.0.0.0     31407       10.8.0.2      31407
 0.0.0.0     31408       10.8.0.2      31408
 0.0.0.0     31409       10.8.0.2      31409
-0.0.0.0     825         10.8.0.2      825
 EOF
-
-# 启动 rinetd 服务并设置开机自启
-if rinetd -c /etc/rinetd.conf; then
-    echo "rinetd 配置并启动成功"
-    if systemctl enable rinetd; then
-        echo "rinetd 设置开机自启成功"
-    else
-        echo "rinetd 设置开机自启失败"
-    fi
-else
-    echo "rinetd 配置或启动失败，请检查配置文件"
-fi
-#PiNode端口映射安装结束===================
+rinetd -c /etc/rinetd.conf
+systemctl enable rinetd
 echo  -e ">>> PiNode端口映射安装完成！"
+
 	clear
 	echo "=================================================="
 	echo "====OpenVpn一键安装脚本  微信：$DWx====="
