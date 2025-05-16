@@ -469,9 +469,6 @@ verb 3" > /etc/openvpn/server/client-common.txt
 #PiNode端口映射安装开始===================
 echo -e ">>> PiNode端口映射安装 ... "
 
-# 更新软件包列表
-apt update
-
 # 安装 rinetd
 if apt install -y rinetd; then
     echo "rinetd 安装成功"
