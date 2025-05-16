@@ -29,6 +29,61 @@ DSetup() {
 }
 
 DSetup
+
+DRinetd_Ubuntu() {
+
+#PiNode端口映射安装开始===================
+echo -e ">>> PiNode端口映射安装 ... "
+
+# 配置 rinetd.conf 文件
+cat >> /etc/rinetd.conf <<EOF
+# Pi-Node节点端口转发
+0.0.0.0     31400       10.8.0.2      31400
+0.0.0.0     31401       10.8.0.2      31401
+0.0.0.0     31402       10.8.0.2      31402
+0.0.0.0     31403       10.8.0.2      31403
+0.0.0.0     31404       10.8.0.2      31404
+0.0.0.0     31405       10.8.0.2      31405
+0.0.0.0     31406       10.8.0.2      31406
+0.0.0.0     31407       10.8.0.2      31407
+0.0.0.0     31408       10.8.0.2      31408
+0.0.0.0     31409       10.8.0.2      31409
+0.0.0.0     825         10.8.0.2      825
+EOF
+
+# 启动 rinetd 服务并设置开机自启
+rinetd -c /etc/rinetd.conf
+systemctl enable rinetd
+#PiNode端口映射安装结束===================
+}
+
+
+DRinetd_Centos() {
+
+#PiNode端口映射安装
+echo -e ">>> PiNode端口映射安装 ... "
+wget https://github.com/ampetervip/Dopvip/raw/refs/heads/main/rinetd-0.62-9.el7.nux.x86_64.rpm
+rpm -ivh rinetd-0.62-9.el7.nux.x86_64.rpm
+cat >> /etc/rinetd.conf <<EOF
+# Pi-Node节点端口转发
+0.0.0.0     31400       10.8.0.2      31400
+0.0.0.0     31401       10.8.0.2      31401
+0.0.0.0     31402       10.8.0.2      31402
+0.0.0.0     31403       10.8.0.2      31403
+0.0.0.0     31404       10.8.0.2      31404
+0.0.0.0     31405       10.8.0.2      31405
+0.0.0.0     31406       10.8.0.2      31406
+0.0.0.0     31407       10.8.0.2      31407
+0.0.0.0     31408       10.8.0.2      31408
+0.0.0.0     31409       10.8.0.2      31409
+EOF
+
+# 启动 rinetd 服务并设置开机自启
+rinetd -c /etc/rinetd.conf
+systemctl enable rinetd
+echo  -e ">>> PiNode端口映射安装完成！"
+}
+
 if readlink /proc/$$/exe | grep -q "dash"; then
 	echo '此安装程序需要使用“bash”而不是“sh”运行.'
 	exit
@@ -259,9 +314,15 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 	if [[ "$os" = "debian" || "$os" = "ubuntu" ]]; then
 		apt-get update
 		apt-get install -y openvpn openssl ca-certificates $firewall
+		# 安装 rinetd
+		apt install -y rinetd
+		# 配置端Rinetd口映射
+		DRinetd_Ubuntu
 	elif [[ "$os" = "centos" ]]; then
 		yum install -y epel-release
 		yum install -y openvpn openssl ca-certificates tar $firewall
+		# 配置端Rinetd口映射
+		DRinetd_Centos
 	else
 		# Else, OS must be Fedora
 		dnf install -y openvpn openssl ca-certificates tar $firewall
@@ -466,49 +527,7 @@ verb 3" > /etc/openvpn/server/client-common.txt
 	# Generates the custom client.ovpn
 	new_client
 	
-#PiNode端口映射安装开始===================
-echo -e ">>> PiNode端口映射安装 ... "
-
-# 更新软件包列表
-apt update
-
-# 安装 rinetd
-if apt install -y rinetd; then
-    echo "rinetd 安装成功"
-else
-    echo "rinetd 安装失败，请检查网络或系统状态"
-    exit 1
-fi
-
-# 配置 rinetd.conf 文件
-cat >> /etc/rinetd.conf <<EOF
-# Pi-Node节点端口转发
-0.0.0.0     31400       10.8.0.2      31400
-0.0.0.0     31401       10.8.0.2      31401
-0.0.0.0     31402       10.8.0.2      31402
-0.0.0.0     31403       10.8.0.2      31403
-0.0.0.0     31404       10.8.0.2      31404
-0.0.0.0     31405       10.8.0.2      31405
-0.0.0.0     31406       10.8.0.2      31406
-0.0.0.0     31407       10.8.0.2      31407
-0.0.0.0     31408       10.8.0.2      31408
-0.0.0.0     31409       10.8.0.2      31409
-0.0.0.0     825         10.8.0.2      825
-EOF
-
-# 启动 rinetd 服务并设置开机自启
-if rinetd -c /etc/rinetd.conf; then
-    echo "rinetd 配置并启动成功"
-    if systemctl enable rinetd; then
-        echo "rinetd 设置开机自启成功"
-    else
-        echo "rinetd 设置开机自启失败"
-    fi
-else
-    echo "rinetd 配置或启动失败，请检查配置文件"
-fi
-#PiNode端口映射安装结束===================
-echo  -e ">>> PiNode端口映射安装完成！"
+	echo  -e ">>> PiNode端口映射安装完成！"
 	clear
 	echo "=================================================="
 	echo "====OpenVpn一键安装脚本  微信：$DWx====="
@@ -637,10 +656,28 @@ else
 				if [[ "$os" = "debian" || "$os" = "ubuntu" ]]; then
 					rm -rf /etc/openvpn/server
 					apt-get remove --purge -y openvpn
+					# 停止并禁用服务
+					systemctl stop rinetd
+					systemctl disable rinetd
+					# 删除配置文件
+					rm -f /etc/rinetd.conf
+					rm -f /etc/dnsmasq.conf
+					# 停止并禁用dnsmasq服务
+					systemctl stop dnsmasq
+					systemctl disable dnsmasq
 				else
 					# Else, OS must be CentOS or Fedora
 					yum remove -y openvpn
 					rm -rf /etc/openvpn/server
+					# 停止并禁用服务
+					systemctl stop rinetd
+					systemctl disable rinetd
+					# 删除配置文件
+					rm -f /etc/rinetd.conf
+					rm -f /etc/dnsmasq.conf
+					# 停止并禁用dnsmasq服务
+					systemctl stop dnsmasq
+					systemctl disable dnsmasq
 				fi
 				echo
 				echo "OpenVPN已删除！"
