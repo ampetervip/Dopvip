@@ -2,39 +2,33 @@
 #王者openvpn   wx:51529502
 # Detect Debian users running the script with "sh" instead of bash
 DWx=15521188891
-DSetupA(){
-	clear
-	echo "=================================================="
-	echo "====OpenVpn一键安装脚本  微信：$DWx====="
-	echo "=================================================="
-	echo ""
-	stty erase ^H
-	DcpPass=51529502
-	read -p "请输入安装密码：" PASSWD
-	    if [ "$PASSWD" == "$DcpPass" ];then
-	        continue
-	    else
-	        echo "密码错误，请重新输入！"
-	        Dpass
-	    fi
+DSetup() {
+    clear
+    echo "==========================================================="
+    echo "====Softether一键安装脚本(Centos专用)  微信：$DWx====="
+    echo "============================================================"
+    echo ""
+    local valid_passwords=("515900" "223300")  # 允许的密码列表
+    read -p "请输入密码：" PASSWD
+    
+    # 检查输入是否在允许的密码列表中
+    local is_valid=0
+    for password in "${valid_passwords[@]}"; do
+        if [ "$PASSWD" == "$password" ]; then
+            is_valid=1
+            break
+        fi
+    done
+    
+    if [ $is_valid -eq 1 ]; then
+        :  # 密码正确，执行后续操作
+    else
+        echo "密码错误，请重新输入！"
+        DSetup  # 递归调用重新输入
+    fi
 }
-DSetupB(){
-	clear
-	echo "=================================================="
-	echo "====OpenVpn一键安装脚本  微信：$DWx====="
-	echo "=================================================="
-	echo ""
- 	stty erase ^H
-	DcpPass=515900
-	read -p "请输入安装密码：" PASSWD
-	    if [ "$PASSWD" == "$DcpPass" ];then
-	        continue
-	    else
-	        echo "密码错误，请重新输入！"
-	        Dpass
-	    fi
-}
-DSetupB
+
+DSetup
 if readlink /proc/$$/exe | grep -q "dash"; then
 	echo '此安装程序需要使用“bash”而不是“sh”运行.'
 	exit
